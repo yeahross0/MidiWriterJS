@@ -3,50 +3,39 @@ import {Track} from './track';
 
 class VexFlow {
 
-	constructor() {
-		// code...
-	}
-
 	/**
 	 * Support for converting VexFlow voice into MidiWriterJS track
 	 * @return MidiWriter.Track object
 	 */
 	trackFromVoice(voice) {
-		var track = new Track();
-		var wait = [];
-		var pitches = [];
+		const track = new Track();
+		let wait = [];
 
 		voice.tickables.forEach(tickable => {
-			pitches = [];
-
 			if (tickable.noteType === 'n') {
-				tickable.keys.forEach(key => {
-					// build array of pitches
-					pitches.push(this.convertPitch(key));
-				});
-				track.addEvent(new NoteEvent({pitch: pitches, duration: this.convertDuration(tickable), wait: wait}));
-
+				track.addEvent(new NoteEvent({
+					pitch: tickable.keys.map(this.convertPitch),
+					duration: this.convertDuration(tickable),
+					wait
+				}));
 				// reset wait
 				wait = [];
-
 			} else if (tickable.noteType === 'r') {
 				// move on to the next tickable and add this to the stack
 				// of the `wait` property for the next note event
 				wait.push(this.convertDuration(tickable));
 				return;
 			}
-
 		});
 
 		// There may be outstanding rests at the end of the track,
 		// pad with a ghost note (zero duration and velocity), just to capture the wait.
 		if(wait.length > 0) {
-		track.addEvent(new NoteEvent({pitch: '[c4]', duration: '0', wait, velocity: '0'}));
+			track.addEvent(new NoteEvent({pitch: '[c4]', duration: '0', wait, velocity: '0'}));
 		}
 
 		return track;
 	}
-
 
 	/**
 	 * Converts VexFlow pitch syntax to MidiWriterJS syntax
@@ -55,7 +44,6 @@ class VexFlow {
 	convertPitch(pitch) {
 		return pitch.replace('/', '');
 	}
-
 
 	/**
 	 * Converts VexFlow duration syntax to MidiWriterJS syntax

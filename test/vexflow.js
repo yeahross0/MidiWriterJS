@@ -1,6 +1,13 @@
 const assert = require('assert');
 const MidiWriter = require('..');
 
+/**
+ * Mock a VexFlow StaveNote
+ * @param {String} noteType
+ * @param {String} duration
+ * @param {[String]} keys
+ * @param {boolean} isDotted
+ */
 function mockNote(noteType='n', duration='8', keys=['c/4'], isDotted=false) {
 	const result = {
 		noteType,
@@ -15,6 +22,11 @@ function mockNote(noteType='n', duration='8', keys=['c/4'], isDotted=false) {
 
 describe('MidiWriterJS', function() {
 	describe('#VexFlow()', function() {
+		it('instantiates', function() {
+			const v = new MidiWriter.VexFlow();
+			assert.notStrictEqual(typeof v, 'undefined');
+			assert.strictEqual(v instanceof MidiWriter.VexFlow, true);
+		});
 		describe('#trackFromVoice', function() {
 			it('converts a VexFlow voice into a track', function() {
 				const mockVoice = {
@@ -33,11 +45,10 @@ describe('MidiWriterJS', function() {
 						mockNote('r')
 					]
 				};
-
 				const vexFlow = new MidiWriter.VexFlow();
 				const track = vexFlow.trackFromVoice(mockVoice);
 				const write = new MidiWriter.Writer(track);
-				assert.strictEqual('TVRoZAAAAAYAAAABAIBNVHJrAAAATACQOEBAgDhAAJA7QECAO0AAkDFAQIAxQECQO0BAgDtAQJAxQECAMUAAkDtAQIA7QACQOkBAgDpAQJA7QECAO0BAkAAAAIAAAAD/LwA=', write.base64());
+				assert.strictEqual(write.base64(), 'TVRoZAAAAAYAAAABAIBNVHJrAAAATACQOEBAgDhAAJA7QECAO0AAkDFAQIAxQECQO0BAgDtAQJAxQECAMUAAkDtAQIA7QACQOkBAgDpAQJA7QECAO0BAkAAAAIAAAAD/LwA=');
 			});
 
 			it('preserves multiple rests', function() {
@@ -49,11 +60,10 @@ describe('MidiWriterJS', function() {
 						mockNote('')
 					]
 				};
-
 				const vexFlow = new MidiWriter.VexFlow();
 				const track = vexFlow.trackFromVoice(mockVoice);
 				const write = new MidiWriter.Writer(track);
-				assert.strictEqual('TVRoZAAAAAYAAAABAIBNVHJrAAAAFQCQPEBAgDxAgQCQAAAAgAAAAP8vAA==', write.base64());
+				assert.strictEqual(write.base64(), 'TVRoZAAAAAYAAAABAIBNVHJrAAAAFQCQPEBAgDxAgQCQAAAAgAAAAP8vAA==');
 			});
 
 			it('appends trailing rests with a silent note', function() {
@@ -65,62 +75,48 @@ describe('MidiWriterJS', function() {
 						mockNote('r')
 					]
 				};
-
 				const vexFlow = new MidiWriter.VexFlow();
 				const track = vexFlow.trackFromVoice(mockVoice);
 				const write = new MidiWriter.Writer(track);
-				assert.strictEqual('TVRoZAAAAAYAAAABAIBNVHJrAAAAHQCQPEBAgDxAAJA8QECAPECBAJAAAACAAAAA/y8A', write.base64());
+				assert.strictEqual(write.base64(), 'TVRoZAAAAAYAAAABAIBNVHJrAAAAHQCQPEBAgDxAAJA8QECAPECBAJAAAACAAAAA/y8A');
 			});
 		});
 
 		describe('#convertPitch()', function() {
-			it('converts notes from VexFlow format', function () {
-				const vexNote = 'c/4';
+			it('converts pitch', function () {
+				const vexNote = 'pit/ch';
 				const vexFlow = new MidiWriter.VexFlow();
-				assert.strictEqual('c4', vexFlow.convertPitch(vexNote));
+				assert.strictEqual(vexFlow.convertPitch(vexNote), 'pitch');
 			});
 		});
 
 		describe('#convertDuration()', function() {
-			it('converts whole notes', function () {
+			it('converts whole, half, quarter and eighth durations', function () {
+				const vexFlow = new MidiWriter.VexFlow();
 				const tickable = mockNote('n', 'w');
-				const vexFlow = new MidiWriter.VexFlow();
-				assert.strictEqual('1', vexFlow.convertDuration(tickable));
+				assert.strictEqual(vexFlow.convertDuration(tickable), '1');
+				tickable.duration = 'h'
+				assert.strictEqual(vexFlow.convertDuration(tickable), '2');
+				tickable.duration = 'q'
+				assert.strictEqual(vexFlow.convertDuration(tickable), '4');
+				tickable.duration = '8'
+				assert.strictEqual(vexFlow.convertDuration(tickable), '8');
 			});
-			it('converts half notes', function () {
-				const tickable = mockNote('n', 'h');
+			it('converts dotted half, quarter and eighth durations', function () {
 				const vexFlow = new MidiWriter.VexFlow();
-				assert.strictEqual('2', vexFlow.convertDuration(tickable));
-			});
-			it('converts quarter notes', function () {
-				const tickable = mockNote('n', 'q');
-				const vexFlow = new MidiWriter.VexFlow();
-				assert.strictEqual('4', vexFlow.convertDuration(tickable));
-			});
-			it('converts eighth notes', function () {
-				const tickable = mockNote('n', '8');
-				const vexFlow = new MidiWriter.VexFlow();
-				assert.strictEqual('8', vexFlow.convertDuration(tickable));
-			});
-			it('dotted half notes', function () {
 				const tickable = mockNote('n', 'h', ['c4'], true);
-				const vexFlow = new MidiWriter.VexFlow();
-				assert.strictEqual('d2', vexFlow.convertDuration(tickable));
+				assert.strictEqual(vexFlow.convertDuration(tickable), 'd2');
+				tickable.duration = 'q'
+				assert.strictEqual(vexFlow.convertDuration(tickable), 'd4');
+				tickable.duration = '8'
+				assert.strictEqual(vexFlow.convertDuration(tickable), 'd8');
 			});
-			it('converts dotted quarter notes', function () {
-				const tickable = mockNote('n', 'q', ['c4'], true);
+			it('preserves numeric and other durations', function () {
 				const vexFlow = new MidiWriter.VexFlow();
-				assert.strictEqual('d4', vexFlow.convertDuration(tickable));
-			});
-			it('converts dotted eighth notes', function () {
-				const tickable = mockNote('n', '8', ['c4'], true);
-				const vexFlow = new MidiWriter.VexFlow();
-				assert.strictEqual('d8', vexFlow.convertDuration(tickable));
-			});
-			it('returns other durations', function () {
-				const tickable = mockNote('n', '64', ['c4'], true);
-				const vexFlow = new MidiWriter.VexFlow();
-				assert.strictEqual('64', vexFlow.convertDuration(tickable));
+				const tickable = mockNote('n', 99);
+				assert.strictEqual(vexFlow.convertDuration(tickable), 99);
+				tickable.duration = 'other'
+				assert.strictEqual(vexFlow.convertDuration(tickable), 'other');
 			});
 		});
 	});
