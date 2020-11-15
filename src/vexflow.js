@@ -9,11 +9,11 @@ class VexFlow {
 
 	/**
 	 * Support for converting VexFlow voice into MidiWriterJS track
-	 * @return MidiWritier.Track object
+	 * @return MidiWriter.Track object
 	 */
 	trackFromVoice(voice) {
 		var track = new Track();
-		var wait;
+		var wait = [];
 		var pitches = [];
 
 		voice.tickables.forEach(tickable => {
@@ -24,18 +24,25 @@ class VexFlow {
 					// build array of pitches
 					pitches.push(this.convertPitch(key));
 				});
+				track.addEvent(new NoteEvent({pitch: pitches, duration: this.convertDuration(tickable), wait: wait}));
+
+				// reset wait
+				wait = [];
 
 			} else if (tickable.noteType === 'r') {
-				// move on to the next tickable and use this rest as a `wait` property for the next event
-				wait = this.convertDuration(tickable);
+				// move on to the next tickable and add this to the stack
+				// of the `wait` property for the next note event
+				wait.push(this.convertDuration(tickable));
 				return;
 			}
 
-			track.addEvent(new NoteEvent({pitch: pitches, duration: this.convertDuration(tickable), wait: wait}));
-
-			// reset wait
-			wait = 0;
 		});
+
+		// There may be outstanding rests at the end of the track,
+		// pad with a ghost note (zero duration and velocity), just to capture the wait.
+		if(wait.length > 0) {
+		track.addEvent(new NoteEvent({pitch: '[c4]', duration: '0', wait, velocity: '0'}));
+		}
 
 		return track;
 	}
