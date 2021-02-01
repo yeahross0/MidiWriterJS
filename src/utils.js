@@ -188,49 +188,36 @@ class Utils {
 	 * @return {number}
 	 */
 	static getDurationMultiplier(duration) {
-		// Need to apply duration here.  Quarter note == Constants.HEADER_CHUNK_DIVISION
-		switch (duration) {
-			case '0':
-				return 0;
-			case '1':
-				return 4;
-			case '2':
-				return 2;
-			case 'd2': // Dotted half
-				return 3;
-			case 'dd2': // Double dotted half
-				return 3.5;
-			case '4':
-				return 1;
-			case '4t':
-				return 0.666;
-			case 'd4': // Dotted quarter
-				return 1.5;
-			case 'dd4': // Double dotted quarter
-				return 1.75;
-			case '8':
-				return 0.5;
-			case '8t':
-				// For 8th triplets, let's divide a quarter by 3, round to the nearest int, and substract the remainder to the last one.
-				return 0.33;
-			case 'd8': // Dotted eighth
-				return 0.75;
-			case 'dd8': // Double dotted eighth
-				return 0.875;
-			case '16':
-				return 0.25;
-			case '16t':
-				return 0.166;
-			case '32':
-				return 0.125;
-			case '64':
-				return 0.0625;
-			default:
-				// Notes default to a quarter, rests default to 0
-				//return type === 'note' ? 1 : 0;
-		}
+		// Need to apply duration here.
+		// Quarter note == Constants.HEADER_CHUNK_DIVISION ticks.
 
-		throw duration + ' is not a valid duration.';
+		if (duration === '0') return 0;
+
+		const match = duration.match(/^(?<dotted>d+)?(?<base>\d+)(?:t(?<tuplet>\d*))?/);
+		if (match) {
+			const base = Number(match.groups.base);
+			// 1 or any power of two:
+			const isValidBase = base === 1 || ((base & (base - 1)) === 0);
+			if (isValidBase) {
+				// how much faster or slower is this note compared to a quarter?
+				const ratio = base / 4;
+				let durationInQuarters = 1 / ratio;
+				const {dotted, tuplet} = match.groups;
+				if (dotted) {
+					const thisManyDots = dotted.length;
+					const divisor = Math.pow(2, thisManyDots);
+					durationInQuarters = durationInQuarters + (durationInQuarters * ((divisor - 1) / divisor));
+				}
+				if (tuplet) {
+					const fitInto = durationInQuarters * 2;
+					// default to triplet:
+					const thisManyNotes = Number(tuplet || '3');
+					durationInQuarters = fitInto / thisManyNotes;
+				}
+				return durationInQuarters
+			}
+		}
+		throw new Error(duration + ' is not a valid duration.');
 	}
 }
 
