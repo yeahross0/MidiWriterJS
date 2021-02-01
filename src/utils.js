@@ -52,6 +52,7 @@ class Utils {
 	 * @return {array} - Bytes that form the MIDI time value
 	 */
 	static numberToVariableLength(ticks) {
+		ticks = Math.round(ticks);
 		var buffer = ticks & 0x7F;
 
 		while (ticks = ticks >> 7) {
@@ -176,9 +177,36 @@ class Utils {
 		}
 
 		// Need to apply duration here.  Quarter note == Constants.HEADER_CHUNK_DIVISION
-		// Rounding only applies to triplets, which the remainder is handled below
 		var quarterTicks = Utils.numberFromBytes(Constants.HEADER_CHUNK_DIVISION);
-		return Math.round(quarterTicks * Utils.getDurationMultiplier(duration));
+		const tickDuration = quarterTicks * Utils.getDurationMultiplier(duration);
+		return Utils.getRoundedIfClose(tickDuration)
+	}
+
+	/**
+	 * Due to rounding errors in JavaScript engines,
+	 * it's safe to round when we're very close to the actual tick number
+	 *
+	 * @static
+	 * @param {number} tick
+	 * @return {number}
+	 */
+	static getRoundedIfClose(tick) {
+		const roundedTick = Math.round(tick);
+		return Math.abs(roundedTick - tick) < 0.000001 ? roundedTick : tick;
+	}
+
+	/**
+	 * Due to low precision of MIDI,
+	 * we need to keep track of rounding errors in deltas.
+	 * This function will calculate the rounding error for a given duration.
+	 *
+	 * @static
+	 * @param {number} tick
+	 * @return {number}
+	 */
+	static getPrecisionLoss(tick) {
+		const roundedTick = Math.round(tick);
+		return roundedTick - tick;
 	}
 
 	/**
@@ -208,7 +236,7 @@ class Utils {
 					const divisor = Math.pow(2, thisManyDots);
 					durationInQuarters = durationInQuarters + (durationInQuarters * ((divisor - 1) / divisor));
 				}
-				if (tuplet) {
+				if (typeof tuplet === 'string') {
 					const fitInto = durationInQuarters * 2;
 					// default to triplet:
 					const thisManyNotes = Number(tuplet || '3');
