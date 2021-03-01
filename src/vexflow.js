@@ -50,18 +50,25 @@ class VexFlow {
 	 * @param note struct from VexFlow
 	 */
 	convertDuration(note) {
-		switch (note.duration) {
+		return 'd'.repeat(note.dots) + this.convertBaseDuration(note.duration) + (note.tuplet ? 't' + note.tuplet.num_notes : '');
+	}
+
+	/**
+	 * Converts VexFlow base duration syntax to MidiWriterJS syntax
+	 * @param duration Vexflow duration
+	 * @returns MidiWriterJS duration
+	 */
+	convertBaseDuration(duration) {
+		switch (duration) {
 			case 'w':
 				return '1';
 			case 'h':
-				return note.isDotted() ? 'd2' : '2';
+				return '2';
 			case 'q':
-				return note.isDotted() ? 'd4' : '4';
-			case '8':
-				return note.isDotted() ? 'd8' : '8';
+				return '4';
+			default:
+				return duration;
 		}
-
-		return note.duration;
 	}
 }
 
