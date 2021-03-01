@@ -86,9 +86,24 @@ describe('MidiWriterJS', function() {
 
 		describe('#convertPitch()', function() {
 			it('converts pitch', function () {
-				const vexNote = 'pit/ch';
 				const vexFlow = new MidiWriter.VexFlow();
-				assert.strictEqual(vexFlow.convertPitch(vexNote), 'pitch');
+				const tickable = mockNote('n', 'h', ['c/4']);
+				assert.deepStrictEqual(tickable.keys.map((pitch, index) => vexFlow.convertPitch(pitch, index, tickable)), ['c4']);
+			});
+			it('converts multiple pitch', function() {
+				const vexFlow = new MidiWriter.VexFlow();
+				const tickable = mockNote('n', 'h', ['b/4', 'c/4']);
+				assert.deepStrictEqual(tickable.keys.map((pitch, index) => vexFlow.convertPitch(pitch, index, tickable)), ['b4', 'c4']);
+			});
+			it('converts accidentals pitch', function() {
+				const vexFlow = new MidiWriter.VexFlow();
+				const tickable = mockNote('n', 'h', ['b#/4', 'cb/4', 'dn/4']);
+				assert.deepStrictEqual(tickable.keys.map((pitch, index) => vexFlow.convertPitch(pitch, index, tickable)), ['b#4', 'cb4', 'd4']);
+			});
+			it('converts rendered accidentals pitch', function() {
+				const vexFlow = new MidiWriter.VexFlow();
+				const tickable = mockNote('n', 'h', ['b/4', 'c/4'], 0, null, [{index: 0, type: '#'}, {index: 1, type: 'b'}]);
+				assert.deepStrictEqual(tickable.keys.map((pitch, index) => vexFlow.convertPitch(pitch, index, tickable, true)), ['b#4', 'cb4']);
 			});
 		});
 
