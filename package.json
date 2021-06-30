@@ -40,6 +40,7 @@
     "watch": "watch 'npm run build' src",
     "postinstall": "node postinstall.js"
   },
+  "runkitExampleFilename": "runkit.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/grimmdude/MidiWriterJS.git"
