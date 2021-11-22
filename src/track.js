@@ -209,7 +209,7 @@ class Track {
 	 * @return {Track}
 	 */
 	setTempo(bpm) {
-		return this.addEvent(new TempoEvent(bpm));
+		return this.addEvent(new TempoEvent({bpm}));
 	}
 
 	/**
@@ -240,7 +240,7 @@ class Track {
 	 * @return {Track}
 	 */
 	addText(text) {
-		return this.addEvent(new TextEvent(text));
+		return this.addEvent(new TextEvent({text}));
 	}
 
 	/**
@@ -249,7 +249,7 @@ class Track {
 	 * @return {Track}
 	 */
 	addCopyright(text) {
-		return this.addEvent(new CopyrightEvent(text));
+		return this.addEvent(new CopyrightEvent({text}));
 	}
 
 	/**
@@ -258,7 +258,7 @@ class Track {
 	 * @return {Track}
 	 */
 	addTrackName(text) {
-		return this.addEvent(new TrackNameEvent(text));
+		return this.addEvent(new TrackNameEvent({text}));
 	}
 
 	/**
@@ -267,7 +267,7 @@ class Track {
 	 * @return {Track}
 	 */
 	addInstrumentName(text) {
-		return this.addEvent(new InstrumentNameEvent(text));
+		return this.addEvent(new InstrumentNameEvent({text}));
 	}
 
 	/**
@@ -276,7 +276,7 @@ class Track {
 	 * @return {Track}
 	 */
 	addMarker(text) {
-		return this.addEvent(new MarkerEvent(text));
+		return this.addEvent(new MarkerEvent({text}));
 	}
 
 	/**
@@ -285,7 +285,7 @@ class Track {
 	 * @return {Track}
 	 */
 	addCuePoint(text) {
-		return this.addEvent(new CuePointEvent(text));
+		return this.addEvent(new CuePointEvent({text}));
 	}
 
 	/**
@@ -294,7 +294,7 @@ class Track {
 	 * @return {Track}
 	 */
 	addLyric(text) {
-		return this.addEvent(new LyricEvent(text));
+		return this.addEvent(new LyricEvent({text}));
 	}
 
 	/**
