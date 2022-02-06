@@ -9,11 +9,11 @@ import {Utils} from '../utils';
 class TempoEvent {
 	constructor(fields) {
 		// Set default fields
-		fields = Object.assign({
-			delta: 0x00,
-		}, fields);
+		fields = Object.assign(fields);
 
 		this.type = 'tempo';
+
+		this.tick = fields.tick;
 
 		const tempo = Math.round(60000000 / fields.bpm);
 

@@ -110,6 +110,9 @@ class Track {
 				precisionLoss = Utils.getPrecisionLoss(event.deltaWithPrecisionCorrection || 0);
 				this.data = this.data.concat(built.data);
 				this.tickPointer = Utils.getRoundedIfClose(event.tick);
+			} else if (event instanceof TempoEvent) {
+				this.tickPointer = Utils.getRoundedIfClose(event.tick);
+				this.data = this.data.concat(event.data);
 			} else {
 				this.data = this.data.concat(event.data);
 			}
@@ -206,10 +209,11 @@ class Track {
 	/**
 	 * Sets tempo of the MIDI file.
 	 * @param {number} bpm - Tempo in beats per minute.
+	 * @param {number} tick - Start tick.
 	 * @return {Track}
 	 */
-	setTempo(bpm) {
-		return this.addEvent(new TempoEvent({bpm}));
+	setTempo(bpm, tick = 0) {
+	   return this.addEvent(new TempoEvent({bpm, tick}));
 	}
 
 	/**
