@@ -9,7 +9,9 @@ import {Utils} from '../utils';
 class TempoEvent {
 	constructor(fields) {
 		// Set default fields
-		fields = Object.assign(fields);
+		fields = Object.assign({
+			delta: 0x00,
+		}, fields);
 
 		this.type = 'tempo';
 
