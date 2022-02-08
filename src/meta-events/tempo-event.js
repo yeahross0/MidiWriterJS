@@ -15,6 +15,8 @@ class TempoEvent {
 
 		this.type = 'tempo';
 
+		this.tick = fields.tick;
+
 		const tempo = Math.round(60000000 / fields.bpm);
 
 		// Start with zero time delta
