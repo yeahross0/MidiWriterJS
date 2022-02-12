@@ -58,6 +58,7 @@ The `NoteEvent` supports these options:
 		<tr>
 			<th>Name</th>
 			<th>Type</th>
+			<th>Default</th>
 			<th>Description</th>
 		</tr>
 	</thead>
@@ -65,11 +66,13 @@ The `NoteEvent` supports these options:
 		<tr>
 			<td><b>pitch</b></td>
 			<td>string or array</td>
+			<td></td>
 			<td>Each pitch can be a string or valid MIDI note code.  Format for string is <code>C#4</code>.  Pro tip: You can use the output from <a href="https://github.com/danigb/tonal" target="_blank">tonal</a> functions to build scales, chords, intervals, etc. in this parameter.</td>
 		</tr>
 		<tr>
 			<td><b>duration</b></td>
 			<td>string or array</td>
+			<td></td>
 			<td>
 				How long the note should sound.
 				<ul>
@@ -97,36 +100,43 @@ The `NoteEvent` supports these options:
 		<tr>
 			<td><b>wait</b></td>
 			<td>string or array</td>
+			<td></td>
 			<td>How long to wait before sounding note (rest).  Takes same values as <b>duration</b>.</td>
 		</tr>
 		<tr>
 			<td><b>sequential</b></td>
 			<td>boolean</td>
-			<td>If true then array of pitches will be played sequentially as opposed to simulatanously.  Default: <code>false</code></td>
+			<td>`false`</td>
+			<td>If true then array of pitches will be played sequentially as opposed to simulatanously.</td>
 		</tr>
 		<tr>
 			<td><b>velocity</b></td>
 			<td>number</td>
-			<td>How loud the note should sound, values 1-100.  Default: <code>50</code></td>
+			<td>`50`</td>
+			<td>How loud the note should sound, values 1-100.</td>
 		</tr>
 		<tr>
 			<td><b>repeat</b></td>
 			<td>number</td>
-			<td>How many times this event should be repeated. Default: <code>1</code></td>
+			<td>`1`</td>
+			<td>How many times this event should be repeated.</td>
 		</tr>
 		<tr>
 			<td><b>channel</b></td>
 			<td>number</td>
-			<td>MIDI channel to use. Default: <code>1</code></td>
+			<td>`1`</td>
+			<td>MIDI channel to use.</td>
 		</tr>
 		<tr>
 			<td><b>grace</b></td>
 			<td>string or array</td>
+			<td></td>
 			<td>Grace note to be applied to note event.  Takes same value format as <code>pitch</code></td>
 		</tr>
 		<tr>
 			<td><b>startTick</b></td>
 			<td>number</td>
+			<td></td>
 			<td>Specific tick where this event should be played.  If this parameter is supplied then <code>wait</code> is disregarded if also supplied.</td>
 		</tr>
 	</tbody>
