@@ -18,20 +18,20 @@ npm install midi-writer-js
 Getting Started
 ------------
 ```javascript
-var MidiWriter = require('midi-writer-js');
+const MidiWriter = require('midi-writer-js');
 
 // Start with a new track
-var track = new MidiWriter.Track();
+const track = new MidiWriter.Track();
 
 // Define an instrument (optional):
 track.addEvent(new MidiWriter.ProgramChangeEvent({instrument: 1}));
 
 // Add some notes:
-var note = new MidiWriter.NoteEvent({pitch: ['C4', 'D4', 'E4'], duration: '4'});
+const note = new MidiWriter.NoteEvent({pitch: ['C4', 'D4', 'E4'], duration: '4'});
 track.addEvent(note);
 
 // Generate a data URI
-var write = new MidiWriter.Writer(track);
+const write = new MidiWriter.Writer(track);
 console.log(write.dataUri());
 ```
 Documentation
@@ -144,9 +144,9 @@ The `Writer` class provides a few ways to output the file:
 Here's an example of how everyone's favorite song "Hot Cross Buns" could be written.  Note use of the mapping function passed as the second argument of `addEvent()`.  This can be used to apply specific properties to all events.  With some 
 street smarts you could also use it for programmatic crescendos and other property 'animation'.
 ```javascript
-var MidiWriter = require('midi-writer-js');
+const MidiWriter = require('midi-writer-js');
 
-var track = new MidiWriter.Track();
+const track = new MidiWriter.Track();
 
 track.addEvent([
 		new MidiWriter.NoteEvent({pitch: ['E4','D4'], duration: '4'}),
@@ -161,7 +161,7 @@ track.addEvent([
   }
 );
 
-var write = new MidiWriter.Writer(track);
+const write = new MidiWriter.Writer(track);
 console.log(write.dataUri());
 ```
 
@@ -170,10 +170,10 @@ MidiWriterJS can export MIDI from VexFlow voices, though this feature is still e
 ```javascript
 
 // ...VexFlow code defining notes
-var voice = create_4_4_voice().addTickables(notes);
+const voice = create_4_4_voice().addTickables(notes);
 
-var vexWriter = new MidiWriter.VexFlow();
-var track = vexWriter.trackFromVoice(voice);
-var writer = new MidiWriter.Writer([track]);
+const vexWriter = new MidiWriter.VexFlow();
+const track = vexWriter.trackFromVoice(voice);
+const writer = new MidiWriter.Writer([track]);
 console.log(writer.dataUri());
 ```
