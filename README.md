@@ -106,25 +106,25 @@ The `NoteEvent` supports these options:
 		<tr>
 			<td><b>sequential</b></td>
 			<td>boolean</td>
-			<td>`false`</td>
+			<td><code>false</code>/td>
 			<td>If true then array of pitches will be played sequentially as opposed to simulatanously.</td>
 		</tr>
 		<tr>
 			<td><b>velocity</b></td>
 			<td>number</td>
-			<td>`50`</td>
+			<td><code>50</code></td>
 			<td>How loud the note should sound, values 1-100.</td>
 		</tr>
 		<tr>
 			<td><b>repeat</b></td>
 			<td>number</td>
-			<td>`1`</td>
+			<td><code>1</code></td>
 			<td>How many times this event should be repeated.</td>
 		</tr>
 		<tr>
 			<td><b>channel</b></td>
 			<td>number</td>
-			<td>`1`</td>
+			<td><code>1</code></td>
 			<td>MIDI channel to use.</td>
 		</tr>
 		<tr>
