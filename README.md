@@ -100,13 +100,13 @@ The `NoteEvent` supports these options:
 		<tr>
 			<td><b>wait</b></td>
 			<td>string or array</td>
-			<td></td>
+			<td><code>0</code></td>
 			<td>How long to wait before sounding note (rest).  Takes same values as <b>duration</b>.</td>
 		</tr>
 		<tr>
 			<td><b>sequential</b></td>
 			<td>boolean</td>
-			<td><code>false</code>/td>
+			<td><code>false</code></td>
 			<td>If true then array of pitches will be played sequentially as opposed to simulatanously.</td>
 		</tr>
 		<tr>
