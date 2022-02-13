@@ -33,7 +33,7 @@
     "test": "test"
   },
   "scripts": {
-    "build": "mkdir -p build && rollup -c && npm run docs",
+    "build": "mkdir -p build && rollup -c",
     "docs": "./node_modules/.bin/jsdoc -r src README.md -d ./docs -t ./node_modules/minami",
     "lint:js": "eslint 'src/**/**.js'",
     "prepublishOnly": "npm test",
