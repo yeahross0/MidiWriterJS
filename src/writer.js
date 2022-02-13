@@ -4,13 +4,14 @@ import {Utils} from './utils';
 /**
  * Object that puts together tracks and provides methods for file output.
  * @param {array|Track} tracks - A single {Track} object or an array of {Track} objects.
+ * @param {object} options - {middleC: 'C4'}
  * @return {Writer}
  */
 class Writer {
-	constructor(tracks) {
+	constructor(tracks, options = {}) {
 		// Ensure tracks is an array
 		this.tracks = Utils.toArray(tracks);
-		this.middleC = 'C4';
+		this.options = options;
 	}
 
 	/**
@@ -23,7 +24,7 @@ class Writer {
 
 		// For each track add final end of track event and build data
 		this.tracks.forEach((track, i) => {
-			data.push(track.buildData({middleC: this.middleC}));
+			data.push(track.buildData(this.options));
 		});
 
 		return data;
@@ -61,12 +62,13 @@ class Writer {
 
 
 	/**
-	 * Define what note should be used for middle C.
-	 * @param {string} middleC
+	 * Set option on instantiated Writer.
+	 * @param {string} key
+	 * @param {any} value
 	 * @return {Writer}
 	 */
-	setMiddleC(middleC = 'C4') {
-		this.middleC = middleC;
+	setOption(key, value) {
+		this.options[key] = value;
 		return this;
 	}
 

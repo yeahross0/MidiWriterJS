@@ -89,6 +89,7 @@ class Track {
 
 	/**
 	 * Builds int array of all events.
+	 * @param {object} options
 	 * @return {Track}
 	 */
 	buildData(options = {}) {
@@ -106,7 +107,7 @@ class Track {
 		this.events.forEach((event, eventIndex) => {
 			// Build event & add to total tick duration
 			if (event instanceof NoteOnEvent || event instanceof NoteOffEvent) {
-				const built = event.buildData(this, precisionLoss);
+				const built = event.buildData(this, precisionLoss, options);
 				precisionLoss = Utils.getPrecisionLoss(event.deltaWithPrecisionCorrection || 0);
 				this.data = this.data.concat(built.data);
 				this.tickPointer = Utils.getRoundedIfClose(event.tick);
