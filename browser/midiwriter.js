@@ -326,13 +326,15 @@ var MidiWriter = (function () {
 	     * Returns the correct MIDI number for the specified pitch.
 	     * Uses Tonal Midi - https://github.com/danigb/tonal/tree/master/packages/midi
 	     * @param {(string|number)} pitch - 'C#4' or midi note code
+	     * @param {string} middleC
 	     * @return {number}
 	     */
 
 	  }, {
 	    key: "getPitch",
 	    value: function getPitch(pitch) {
-	      return toMidi(pitch);
+	      var middleC = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'C4';
+	      return 60 - toMidi(middleC) + toMidi(pitch);
 	    }
 	    /**
 	     * Translates number of ticks to MIDI timestamp format, returning an array of
@@ -595,7 +597,6 @@ var MidiWriter = (function () {
 	    this.wait = fields.wait;
 	    this.velocity = fields.velocity;
 	    this.startTick = fields.startTick;
-	    this.midiNumber = Utils.getPitch(this.pitch);
 	    this.tick = null;
 	    this.delta = null;
 	    this.data = fields.data;
@@ -610,6 +611,7 @@ var MidiWriter = (function () {
 	  _createClass(NoteOnEvent, [{
 	    key: "buildData",
 	    value: function buildData(track, precisionDelta) {
+	      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 	      this.data = []; // Explicitly defined startTick event
 
 	      if (this.startTick) {
@@ -624,7 +626,7 @@ var MidiWriter = (function () {
 	      }
 
 	      this.deltaWithPrecisionCorrection = Utils.getRoundedIfClose(this.delta - precisionDelta);
-	      this.data = Utils.numberToVariableLength(this.deltaWithPrecisionCorrection).concat(this.getStatusByte(), this.midiNumber, Utils.convertVelocity(this.velocity));
+	      this.data = Utils.numberToVariableLength(this.deltaWithPrecisionCorrection).concat(this.getStatusByte(), Utils.getPitch(this.pitch, options.middleC), Utils.convertVelocity(this.velocity));
 	      return this;
 	    }
 	    /**
@@ -665,7 +667,6 @@ var MidiWriter = (function () {
 	    this.pitch = fields.pitch;
 	    this.duration = fields.duration;
 	    this.velocity = fields.velocity;
-	    this.midiNumber = Utils.getPitch(this.pitch);
 	    this.tick = fields.tick;
 	    this.delta = Utils.getTickDuration(this.duration);
 	    this.data = fields.data;
@@ -680,12 +681,14 @@ var MidiWriter = (function () {
 	  _createClass(NoteOffEvent, [{
 	    key: "buildData",
 	    value: function buildData(track, precisionDelta) {
+	      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
 	      if (this.tick === null) {
 	        this.tick = Utils.getRoundedIfClose(this.delta + track.tickPointer);
 	      }
 
 	      this.deltaWithPrecisionCorrection = Utils.getRoundedIfClose(this.delta - precisionDelta);
-	      this.data = Utils.numberToVariableLength(this.deltaWithPrecisionCorrection).concat(this.getStatusByte(), this.midiNumber, Utils.convertVelocity(this.velocity));
+	      this.data = Utils.numberToVariableLength(this.deltaWithPrecisionCorrection).concat(this.getStatusByte(), Utils.getPitch(this.pitch, options.middleC), Utils.convertVelocity(this.velocity));
 	      return this;
 	    }
 	    /**
@@ -1261,6 +1264,7 @@ var MidiWriter = (function () {
 	    }
 	    /**
 	     * Builds int array of all events.
+	     * @param {object} options
 	     * @return {Track}
 	     */
 
@@ -1269,6 +1273,7 @@ var MidiWriter = (function () {
 	    value: function buildData() {
 	      var _this2 = this;
 
+	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	      // Remove existing end track event and add one.
 	      // This makes sure it's at the very end of the event list.
 	      this.removeEventsByType('end-track').addEvent(new EndTrackEvent()); // Reset
@@ -1280,7 +1285,7 @@ var MidiWriter = (function () {
 	      this.events.forEach(function (event, eventIndex) {
 	        // Build event & add to total tick duration
 	        if (event instanceof NoteOnEvent || event instanceof NoteOffEvent) {
-	          var built = event.buildData(_this2, precisionLoss);
+	          var built = event.buildData(_this2, precisionLoss, options);
 	          precisionLoss = Utils.getPrecisionLoss(event.deltaWithPrecisionCorrection || 0);
 	          _this2.data = _this2.data.concat(built.data);
 	          _this2.tickPointer = Utils.getRoundedIfClose(event.tick);
@@ -1711,36 +1716,50 @@ var MidiWriter = (function () {
 	/**
 	 * Object that puts together tracks and provides methods for file output.
 	 * @param {array|Track} tracks - A single {Track} object or an array of {Track} objects.
+	 * @param {object} options - {middleC: 'C4'}
 	 * @return {Writer}
 	 */
 
 	var Writer = /*#__PURE__*/function () {
 	  function Writer(tracks) {
-	    var _this = this;
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	    _classCallCheck(this, Writer);
 
-	    // Ensure track is an array
-	    tracks = Utils.toArray(tracks);
-	    this.data = [];
-	    this.data.push(new HeaderChunk(tracks.length)); // For each track add final end of track event and build data
-
-	    tracks.forEach(function (track, i) {
-	      _this.data.push(track.buildData());
-	    });
+	    // Ensure tracks is an array
+	    this.tracks = Utils.toArray(tracks);
+	    this.options = options;
 	  }
 	  /**
-	   * Builds the file into a Uint8Array
-	   * @return {Uint8Array}
+	   * Builds array of data from chunkschunks.
+	   * @return {array}
 	   */
 
 
 	  _createClass(Writer, [{
+	    key: "buildData",
+	    value: function buildData() {
+	      var _this = this;
+
+	      var data = [];
+	      data.push(new HeaderChunk(this.tracks.length)); // For each track add final end of track event and build data
+
+	      this.tracks.forEach(function (track, i) {
+	        data.push(track.buildData(_this.options));
+	      });
+	      return data;
+	    }
+	    /**
+	     * Builds the file into a Uint8Array
+	     * @return {Uint8Array}
+	     */
+
+	  }, {
 	    key: "buildFile",
 	    value: function buildFile() {
 	      var build = []; // Data consists of chunks which consists of data
 
-	      this.data.forEach(function (d) {
+	      this.buildData().forEach(function (d) {
 	        return build = build.concat(d.type, d.size, d.data);
 	      });
 	      return new Uint8Array(build);
@@ -1767,6 +1786,19 @@ var MidiWriter = (function () {
 	      return 'data:audio/midi;base64,' + this.base64();
 	    }
 	    /**
+	     * Set option on instantiated Writer.
+	     * @param {string} key
+	     * @param {any} value
+	     * @return {Writer}
+	     */
+
+	  }, {
+	    key: "setOption",
+	    value: function setOption(key, value) {
+	      this.options[key] = value;
+	      return this;
+	    }
+	    /**
 	     * Output to stdout
 	     * @return {string}
 	     */
@@ -1774,7 +1806,7 @@ var MidiWriter = (function () {
 	  }, {
 	    key: "stdout",
 	    value: function stdout() {
-	      return process.stdout.write(new Buffer(this.buildFile()));
+	      return process.stdout.write(Buffer.from(this.buildFile()));
 	    }
 	  }]);
 
