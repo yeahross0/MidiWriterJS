@@ -769,7 +769,10 @@ var MidiWriter = (function () {
 	          _this.data = _this.data.concat(noteEvent.data);
 	        });
 	      } // fields.pitch could be an array of pitches.
+	      // If so create note events for each and apply the same duration.
+	      // By default this is a chord if it's an array of notes that requires one NoteOnEvent.
 	      // If this.sequential === true then it's a sequential string of notes that requires separate NoteOnEvents.
+
 
 	      if (!this.sequential) {
 	        // Handle repeat
@@ -826,7 +829,7 @@ var MidiWriter = (function () {
 	        }
 	      } else {
 	        // Handle repeat
-	        for (var j = 0; j < this.repeat; j++) {
+	        for (var _j = 0; _j < this.repeat; _j++) {
 	          this.pitch.forEach(function (p, i) {
 
 	            var noteOnNew = new NoteOnEvent({
@@ -1282,7 +1285,7 @@ var MidiWriter = (function () {
 	      this.size = [];
 	      this.tickPointer = 0;
 	      var precisionLoss = 0;
-	      this.events.forEach(function (event, eventIndex) {
+	      this.events.forEach(function (event) {
 	        // Build event & add to total tick duration
 	        if (event instanceof NoteOnEvent || event instanceof NoteOffEvent) {
 	          var built = event.buildData(_this2, precisionLoss, options);
@@ -1371,10 +1374,10 @@ var MidiWriter = (function () {
 
 	      this.events.splice(splicedEventIndex, 0, event); // Now adjust delta of all following events
 
-	      for (var i = splicedEventIndex + 1; i < this.events.length; i++) {
+	      for (var _i = splicedEventIndex + 1; _i < this.events.length; _i++) {
 	        // Since each existing event should have a tick value at this point we just need to
 	        // adjust delta to that the event still falls on the correct tick.
-	        this.events[i].delta = this.events[i].tick - this.events[i - 1].tick;
+	        this.events[_i].delta = this.events[_i].tick - this.events[_i - 1].tick;
 	      }
 	    }
 	    /**
@@ -1744,7 +1747,7 @@ var MidiWriter = (function () {
 	      var data = [];
 	      data.push(new HeaderChunk(this.tracks.length)); // For each track add final end of track event and build data
 
-	      this.tracks.forEach(function (track, i) {
+	      this.tracks.forEach(function (track) {
 	        data.push(track.buildData(_this.options));
 	      });
 	      return data;

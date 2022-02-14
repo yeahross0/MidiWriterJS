@@ -63,12 +63,12 @@ class NoteEvent {
 
 		// fields.pitch could be an array of pitches.
 		// If so create note events for each and apply the same duration.
-		var noteOn, noteOff;
+
 		// By default this is a chord if it's an array of notes that requires one NoteOnEvent.
 		// If this.sequential === true then it's a sequential string of notes that requires separate NoteOnEvents.
 		if ( ! this.sequential) {
 			// Handle repeat
-			for (var j = 0; j < this.repeat; j++) {
+			for (let j = 0; j < this.repeat; j++) {
 				// Note on
 				this.pitch.forEach((p, i) => {
 					if (i == 0) {
@@ -125,7 +125,7 @@ class NoteEvent {
 
 		} else {
 			// Handle repeat
-			for (var j = 0; j < this.repeat; j++) {
+			for (let j = 0; j < this.repeat; j++) {
 				this.pitch.forEach((p, i) => {
 					// restDuration only applies to first note
 					if (i > 0) {
