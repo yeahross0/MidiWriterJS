@@ -350,7 +350,7 @@ var MidiWriter = (function () {
 	    key: "numberToVariableLength",
 	    value: function numberToVariableLength(ticks) {
 	      ticks = Math.round(ticks);
-	      var buffer = ticks & 0x7F;
+	      var buffer = ticks & 0x7F; // eslint-disable-next-line no-cond-assign
 
 	      while (ticks = ticks >> 7) {
 	        buffer <<= 8;
@@ -754,14 +754,12 @@ var MidiWriter = (function () {
 	      var _this = this;
 
 	      // Reset data array
-	      this.data = [];
-	      this.tickDuration;
-	      this.restDuration; // Apply grace note(s) and subtract ticks (currently 1 tick per grace note) from tickDuration so net value is the same
+	      this.data = []; // Apply grace note(s) and subtract ticks (currently 1 tick per grace note) from tickDuration so net value is the same
 
 	      if (this.grace) {
 	        var graceDuration = 1;
 	        this.grace = Utils.toArray(this.grace);
-	        this.grace.forEach(function (pitch) {
+	        this.grace.forEach(function () {
 	          var noteEvent = new NoteEvent({
 	            pitch: _this.grace,
 	            duration: 'T' + graceDuration
@@ -779,8 +777,10 @@ var MidiWriter = (function () {
 	        for (var j = 0; j < this.repeat; j++) {
 	          // Note on
 	          this.pitch.forEach(function (p, i) {
+	            var noteOnNew;
+
 	            if (i == 0) {
-	              var noteOnNew = new NoteOnEvent({
+	              noteOnNew = new NoteOnEvent({
 	                channel: _this.channel,
 	                wait: _this.wait,
 	                velocity: _this.velocity,
@@ -790,7 +790,7 @@ var MidiWriter = (function () {
 	            } else {
 	              // Running status (can ommit the note on status)
 	              //noteOn = new NoteOnEvent({data: [0, Utils.getPitch(p), Utils.convertVelocity(this.velocity)]});
-	              var noteOnNew = new NoteOnEvent({
+	              noteOnNew = new NoteOnEvent({
 	                channel: _this.channel,
 	                wait: 0,
 	                velocity: _this.velocity,
@@ -803,9 +803,11 @@ var MidiWriter = (function () {
 	          }); // Note off
 
 	          this.pitch.forEach(function (p, i) {
+	            var noteOffNew;
+
 	            if (i == 0) {
 	              //noteOff = new NoteOffEvent({data: Utils.numberToVariableLength(tickDuration).concat(this.getNoteOffStatus(), Utils.getPitch(p), Utils.convertVelocity(this.velocity))});
-	              var noteOffNew = new NoteOffEvent({
+	              noteOffNew = new NoteOffEvent({
 	                channel: _this.channel,
 	                duration: _this.duration,
 	                velocity: _this.velocity,
@@ -815,7 +817,7 @@ var MidiWriter = (function () {
 	            } else {
 	              // Running status (can ommit the note off status)
 	              //noteOff = new NoteOffEvent({data: [0, Utils.getPitch(p), Utils.convertVelocity(this.velocity)]});
-	              var noteOffNew = new NoteOffEvent({
+	              noteOffNew = new NoteOffEvent({
 	                channel: _this.channel,
 	                duration: 0,
 	                velocity: _this.velocity,
@@ -831,7 +833,6 @@ var MidiWriter = (function () {
 	        // Handle repeat
 	        for (var _j = 0; _j < this.repeat; _j++) {
 	          this.pitch.forEach(function (p, i) {
-
 	            var noteOnNew = new NoteOnEvent({
 	              channel: _this.channel,
 	              wait: i > 0 ? 0 : _this.wait,
@@ -1612,7 +1613,6 @@ var MidiWriter = (function () {
 	          // move on to the next tickable and add this to the stack
 	          // of the `wait` property for the next note event
 	          wait.push(_this.convertDuration(tickable));
-	          return;
 	        }
 	      }); // There may be outstanding rests at the end of the track,
 	      // pad with a ghost note (zero duration and velocity), just to capture the wait.

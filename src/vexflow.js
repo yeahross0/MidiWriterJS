@@ -24,7 +24,6 @@ class VexFlow {
 				// move on to the next tickable and add this to the stack
 				// of the `wait` property for the next note event
 				wait.push(this.convertDuration(tickable));
-				return;
 			}
 		});
 

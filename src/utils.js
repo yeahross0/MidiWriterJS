@@ -56,6 +56,7 @@ class Utils {
 		ticks = Math.round(ticks);
 		var buffer = ticks & 0x7F;
 
+		// eslint-disable-next-line no-cond-assign
 		while (ticks = ticks >> 7) {
 			buffer <<= 8;
 			buffer |= ((ticks & 0x7F) | 0x80);
