@@ -901,11 +901,12 @@ var MidiWriter = (function () {
 
 	  // Set default fields
 	  fields = Object.assign({
-	    delta: 0x00
+	    delta: 0x00,
+	    channel: 0x01
 	  }, fields);
 	  this.type = 'program'; // delta time defaults to 0.
 
-	  this.data = Utils.numberToVariableLength(fields.delta).concat(Constants.PROGRAM_CHANGE_STATUS, fields.instrument);
+	  this.data = Utils.numberToVariableLength(fields.delta).concat(Constants.PROGRAM_CHANGE_STATUS + fields.channel - 1, fields.instrument);
 	});
 
 	/**
