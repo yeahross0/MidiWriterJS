@@ -3,7 +3,7 @@ npm-debug.log
 node_modules
 #build
 index.html
-index.js
+#index.js
 yarn.lock
 
 # test artifacts
