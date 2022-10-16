@@ -1821,6 +1821,7 @@ var main = {
   NoteEvent: NoteEvent,
   PitchBendEvent: PitchBendEvent,
   ProgramChangeEvent: ProgramChangeEvent,
+  ControllerChangeEvent: ControllerChangeEvent,
   Track: Track,
   Utils: Utils,
   VexFlow: VexFlow,

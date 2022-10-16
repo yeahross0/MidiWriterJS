@@ -1824,6 +1824,7 @@ var MidiWriter = (function () {
 	  NoteEvent: NoteEvent,
 	  PitchBendEvent: PitchBendEvent,
 	  ProgramChangeEvent: ProgramChangeEvent,
+	  ControllerChangeEvent: ControllerChangeEvent,
 	  Track: Track,
 	  Utils: Utils,
 	  VexFlow: VexFlow,

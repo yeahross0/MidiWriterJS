@@ -4,6 +4,7 @@ import {NoteOffEvent} from './note-events/note-off-event.js';
 import {NoteEvent} from './note-events/note-event.js';
 import {PitchBendEvent} from './meta-events/pitch-bend-event.js';
 import {ProgramChangeEvent} from './meta-events/program-change-event.js';
+import {ControllerChangeEvent} from './meta-events/controller-change-event.js';
 import {Track} from './track.js';
 import {Utils} from './utils.js';
 import {VexFlow} from './vexflow.js';
@@ -16,6 +17,7 @@ export default {
   NoteEvent,
   PitchBendEvent,
   ProgramChangeEvent,
+  ControllerChangeEvent,
   Track,
   Utils,
   VexFlow,
