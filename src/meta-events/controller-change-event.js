@@ -11,11 +11,12 @@ class ControllerChangeEvent {
 		// Set default fields
 		fields = Object.assign({
 			delta: 0x00,
+			channel: 0x01,
 		}, fields);
 
 		this.type = 'controller';
 		// delta time defaults to 0.
-		this.data = Utils.numberToVariableLength(fields.delta).concat(Constants.CONTROLLER_CHANGE_STATUS, fields.controllerNumber, fields.controllerValue);
+		this.data = Utils.numberToVariableLength(fields.delta).concat(Constants.CONTROLLER_CHANGE_STATUS + fields.channel - 1, fields.controllerNumber, fields.controllerValue);
 	}
 }
 
